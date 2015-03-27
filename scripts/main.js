@@ -65,24 +65,24 @@ JumpGame.prototype = {
             var platform = this.platforms.create(x, y, type);
 
             //  Set a random speed between 50 and 200
-            platform.body.velocity.x = this.rnd.between(100, 150);
+            platform.body.velocity.x = this.rnd.between(50, 200);
 
             //  Inverse it?
-            if (Math.random() > 0.5)
+            if (Math.random() < 0.5)
             {
                 platform.body.velocity.x *= -1;
             }
 
-            x += 200;
+            x += 300;
 
             if (x >= 600)
             {
                 x = 0;
             }
 
-            y+= 104;
+            y+= 150;
         }
-
+        
         this.platforms.setAll('body.allowGravity', false);
         this.platforms.setAll('body.immovable', true);
 
@@ -91,7 +91,7 @@ JumpGame.prototype = {
         this.physics.arcade.enable(this.player);
 
         this.player.body.collideWorldBounds = true;
-        this.player.body.setSize(100, 100, 0, 0);
+        this.player.body.setSize(95, 95, 0, 0);
 
         this.player.animations.add('right', [6, 7, 8 , 9 , 10, 11], 7, true);
         //this.player.animations.add('turn', [0], 20, false);
