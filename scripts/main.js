@@ -1,4 +1,4 @@
-var game = new Phaser.Game(650, 600, Phaser.CANVAS, 'game');
+var game = new Phaser.Game(649, 600, Phaser.CANVAS, 'game');
 
 var JumpGame = function () {
 
@@ -21,7 +21,7 @@ JumpGame.prototype = {
 
         this.game.renderer.renderSession.roundPixels = true;
 
-        this.world.resize(650, 2000);
+        this.world.resize(649, 2000);
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
 
