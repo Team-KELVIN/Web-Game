@@ -1,6 +1,6 @@
-var game = new Phaser.Game(640, 480, Phaser.CANVAS, 'game');
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game');
 
-var PhaserGame = function () {
+var JumpGame = function () {
 
     this.player = null;
     this.platforms = null;
@@ -15,17 +15,17 @@ var PhaserGame = function () {
 
 };
 
-PhaserGame.prototype = {
+JumpGame.prototype = {
 
     init: function () {
 
         this.game.renderer.renderSession.roundPixels = true;
 
-        this.world.resize(640, 2000);
+        this.world.resize(800, 2000);
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
 
-        this.physics.arcade.gravity.y = 750;
+        this.physics.arcade.gravity.y = 650;
         this.physics.arcade.skipQuadTree = false;
 
     },
@@ -38,10 +38,10 @@ PhaserGame.prototype = {
         //this.load.crossOrigin = 'anonymous';
 
         this.load.image('trees', 'assets/trees.png');
-        this.load.image('clouds', 'assets/clouds.png');
+        this.load.image('background', 'assets/background-forest.png');
         this.load.image('platform', 'assets/platform.png');
         this.load.image('ice-platform', 'assets/ice-platform.png');
-        this.load.spritesheet('dude', 'assets/walking.png', 40, 40);
+        this.load.spritesheet('dude', 'assets/posum-guy.png', 100, 100);
 
     },
 
@@ -49,10 +49,10 @@ PhaserGame.prototype = {
 
         this.stage.backgroundColor = '#2f9acc';
 
-        this.sky = this.add.tileSprite(0, 0, 640, 480, 'clouds');
+        this.sky = this.add.tileSprite(0, 0, 800, 600, 'background');
         this.sky.fixedToCamera = true;
 
-        this.add.sprite(0, 1906, 'trees');
+        this.add.sprite(0, 1700, 'trees');
 
         this.platforms = this.add.physicsGroup();
 
@@ -86,16 +86,17 @@ PhaserGame.prototype = {
         this.platforms.setAll('body.allowGravity', false);
         this.platforms.setAll('body.immovable', true);
 
-        this.player = this.add.sprite(320, 1952, 'dude');
+        this.player = this.add.sprite(300, 1900, 'dude');
 
         this.physics.arcade.enable(this.player);
 
         this.player.body.collideWorldBounds = true;
-        this.player.body.setSize(30, 32, 5, 16);
+        this.player.body.setSize(100, 100, 0, 0);
 
-        this.player.animations.add('right', [0, 1, 2, 3], 10, true);
-        this.player.animations.add('turn', [4], 20, false);
-        this.player.animations.add('left', [5, 6, 7, 8], 10, true);
+        this.player.animations.add('right', [6, 7, 8 , 9 , 10, 11], 7, true);
+        //this.player.animations.add('turn', [0], 20, false);
+        this.player.animations.add('left', [12, 13, 14, 15,16,17], 7, true);
+        //this.player.animation.add('up',[12,13], 2, true);
 
         this.camera.follow(this.player);
 
@@ -170,7 +171,7 @@ PhaserGame.prototype = {
                 }
                 else
                 {
-                    this.player.frame = 5;
+                    this.player.frame = 1;
                 }
 
                 this.facing = 'idle';
@@ -200,4 +201,4 @@ PhaserGame.prototype = {
 
 };
 
-game.state.add('Game', PhaserGame, true);
+game.state.add('Game', JumpGame, true);
