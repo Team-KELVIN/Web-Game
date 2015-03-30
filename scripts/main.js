@@ -1,4 +1,11 @@
-var game = new Phaser.Game(649, 600, Phaser.CANVAS, 'game');
+var game = new Phaser.Game(650, 600, Phaser.CANVAS, 'game');
+var counter = 0;
+var lives = 3;
+var scoreText;
+var livesText;
+var introText;
+var score = 0;
+var button;
 
 var JumpGame = function () {
 
@@ -21,7 +28,7 @@ JumpGame.prototype = {
 
         this.game.renderer.renderSession.roundPixels = true;
 
-        this.world.resize(649, 2000);
+        this.world.resize(650, 2000);
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -101,6 +108,14 @@ JumpGame.prototype = {
         this.camera.follow(this.player);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        scoreText = game.add.text(10, 1950, 'score: 0', { font: "20px Arial", fill: "yellow", align: "left" });
+        livesText = game.add.text(580, 1950, 'lives: 3', { font: "20px Arial", fill: "yellow", align: "left" });
+        introText = game.add.text(game.world.centerX, 1650, '- click to start -', { font: "40px Arial", fill: "yellow", align: "center" });
+        introText.visible = false;
+        introText.anchor.setTo(0.5, 0.5);
+        button = game.add.button(game.world.centerX - 95, 400, 'button', this, 2, 1, 0);
+        button.visible = false;
 
     },
 
@@ -195,8 +210,26 @@ JumpGame.prototype = {
 
         this.wasStanding = standing;
 
+        if (this.player.body.velocity.y >= 700) {
+               counter++;
+        }
 
 
+        if (counter > 0 && this.player.body.velocity.y === 0) {
+            console.log('died');
+            counter = 0;
+            lives--;
+            livesText.text = 'lives: ' + lives;
+            if (lives === 0)
+            {
+                console.log('game over');
+                introText.text = 'Game Over!';
+                introText.visible = true;
+                this.player.kill();
+                //this.button.visible = true;
+                //game.state.restart();
+            }
+        }
     }
 
 };
