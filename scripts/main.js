@@ -47,8 +47,8 @@ JumpGame.prototype = {
         this.load.image('trees', 'assets/trees.png');
         this.load.image('background', 'assets/background-forest.png');
         this.load.image('platform', 'assets/platform.png');
-        this.load.image('ice-platform', 'assets/ice-platform.png');
-        this.load.spritesheet('dude', 'assets/posum-guy.png', 100, 100);
+        this.load.image('dark-platform', 'assets/dark-platform.png');
+        this.load.spritesheet('player', 'assets/posum-guy.png', 100, 100);
 
     },
 
@@ -68,7 +68,7 @@ JumpGame.prototype = {
 
         for (var i = 0; i < 19; i++)
         {
-            var type = i % 2 === 1 ? 'platform' : 'ice-platform';
+            var type = i % 2 === 1 ? 'platform' : 'dark-platform';
             var platform = this.platforms.create(x, y, type);
 
             //  Set a random speed between 50 and 200
@@ -93,12 +93,12 @@ JumpGame.prototype = {
         this.platforms.setAll('body.allowGravity', false);
         this.platforms.setAll('body.immovable', true);
 
-        this.player = this.add.sprite(300, 1900, 'dude');
+        this.player = this.add.sprite(300, 1900, 'player');
 
         this.physics.arcade.enable(this.player);
 
         this.player.body.collideWorldBounds = true;
-        this.player.body.setSize(95, 95, 0, 0);
+        this.player.body.setSize(100, 100, 0, 0);
 
         this.player.animations.add('right', [6, 7, 8 , 9 , 10, 11], 7, true);
         //this.player.animations.add('turn', [0], 20, false);
