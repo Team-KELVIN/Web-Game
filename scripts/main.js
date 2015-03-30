@@ -39,11 +39,6 @@ JumpGame.prototype = {
 
     preload: function () {
 
-        //  We need this because the assets are on Amazon S3
-        //  Remove the next 2 lines if running locally
-        //this.load.baseURL = 'http://files.phaser.io.s3.amazonaws.com/codingtips/issue003/';
-        //this.load.crossOrigin = 'anonymous';
-
         this.load.image('trees', 'assets/trees.png');
         this.load.image('background', 'assets/background-forest.png');
         this.load.image('platform', 'assets/platform.png');
@@ -103,7 +98,9 @@ JumpGame.prototype = {
         this.player.animations.add('right', [6, 7, 8 , 9 , 10, 11], 7, true);
         //this.player.animations.add('turn', [0], 20, false);
         this.player.animations.add('left', [12, 13, 14, 15,16,17], 7, true);
-        //this.player.animation.add('up',[12,13], 2, true);
+        this.player.animations.add('down',[20,20], 2, true);
+        this.player.animations.add('dead',[21,21], 2, true);
+
 
         this.camera.follow(this.player);
 
@@ -132,14 +129,16 @@ JumpGame.prototype = {
 
     },
 
-    setFriction: function (player, platform) {
-
-        if (platform.key === 'ice-platform')
-        {
-            player.body.x -= platform.body.x - platform.body.prev.x;
-        }
-
-    },
+    // sliding
+    //
+    //setFriction: function (player, platform) {
+    //
+    //    if (platform.key === 'ice-platform')
+    //    {
+    //        player.body.x -= platform.body.x - platform.body.prev.x;
+    //    }
+    //
+    //},
 
     update: function () {
 
@@ -193,8 +192,7 @@ JumpGame.prototype = {
             }
         }
 
-        //  No longer standing on the edge, but were
-        //  Give them a 250ms grace period to jump after falling
+        //  Period to jump after falling
         if (!standing && this.wasStanding)
         {
             this.edgeTimer = this.time.time + 250;
@@ -219,12 +217,18 @@ JumpGame.prototype = {
             console.log('died');
             counter = 0;
             lives--;
+            this.player.play('down');
+
             livesText.text = 'lives: ' + lives;
+
             if (lives === 0)
             {
                 console.log('game over');
                 introText.text = 'Game Over!';
                 introText.visible = true;
+
+                this.player.play('dead');// rip animation
+
                 this.player.kill();
                 //this.button.visible = true;
                 //game.state.restart();
