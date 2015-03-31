@@ -5,15 +5,15 @@ var scoreText;
 var livesText;
 var introText;
 var score = 0;
-var button;
+var isEaten = false;
+var hasntTouchOrange = true;
+var orangeIsEaten = false;
 
 var JumpGame = function () {
 
     this.player = null;
     this.platforms = null;
     this.background = null;
-    var fruit = null;
-
 
     this.facing = 'left';
     this.edgeTimer = 0;
@@ -52,8 +52,6 @@ JumpGame.prototype = {
 
     create: function () {
 
-
-
         //this.platforms.setAll('body.allowGravity', false);
         //this.platforms.setAll('body.immovable', true);
         //this.platforms.setAll('body.velocity.x', 100);
@@ -91,8 +89,10 @@ JumpGame.prototype = {
             y += 150;
         }
 
-        this.fruit.create(650, 2050, 'orange');
+        //CREATE FRUITS
+        this.orange = this.add.sprite(650, 2050, 'orange');
 
+        //CREATE PLATFORMS
         this.platforms.create(0, 200, 'platform');
         this.platforms.create(650, 600, 'platform');
         this.platforms.create(0, 1000, 'platform');
@@ -131,8 +131,8 @@ JumpGame.prototype = {
 
         // TODO score and lives need to be fixed at window
 
-        scoreText = game.add.text(10, 2350, 'score: 0', {font: "20px Arial", fill: "yellow", align: "left"});
-        livesText = game.add.text(720, 2350, 'lives: 3', {font: "20px Arial", fill: "yellow", align: "left"});
+
+
         introText = game.add.text(game.world.centerX, 2300, '- click to start -', {
             font: "40px Arial",
             fill: "yellow",
@@ -140,8 +140,8 @@ JumpGame.prototype = {
         });
         introText.visible = false;
         introText.anchor.setTo(0.5, 0.5);
-        button = game.add.button(game.world.centerX - 95, 2300, 'button', this, 2, 1, 0);
-        button.visible = false;
+        //button = game.add.button(game.world.centerX - 95, 2300, 'button', this, 2, 1, 0);
+        //button.visible = false;
 
     },
 
@@ -169,6 +169,9 @@ JumpGame.prototype = {
 
     fruitEaten: function (player, fruit) {
         // TODO fruit disappear, score++
+        if (player.x > fruit.x - 30 && player.x < fruit.x + 30 && player.y > fruit.y - 30 && player.y < fruit.y + 30) {
+            return true;
+        }
     },
 
     update: function () {
@@ -181,9 +184,11 @@ JumpGame.prototype = {
 
         //this.physics.arcade.collide(this.player, this.platform, this.setFriction, null, this);
 
+        if (orangeIsEaten) {
+            game.world.remove(this.orange);
+        }
 
         this.physics.arcade.overlap(this.player, this.fruit, this.fruitEaten);
-
 
         //  Do this AFTER the collide check, or we won't have blocked/touching set
         var standing = this.player.body.blocked.down || this.player.body.touching.down;
@@ -229,7 +234,7 @@ JumpGame.prototype = {
         //  Allowed to jump?
         if ((standing || this.time.time <= this.edgeTimer) && this.cursors.up.isDown && this.time.time > this.jumpTimer) {
             //Jumping distance
-            this.player.body.velocity.y = -450;
+            this.player.body.velocity.y = -500;
             this.jumpTimer = this.time.time + 750;
         }
 
@@ -239,29 +244,44 @@ JumpGame.prototype = {
             counter++;
         }
 
+        if (this.fruitEaten(this.player, this.orange) && hasntTouchOrange) {
+            isEaten = true;
+        }
+
+        if (isEaten) {
+            score += 20;
+            isEaten = false;
+            hasntTouchOrange = false;
+            orangeIsEaten = true;
+            game.world.remove(this.orange);
+        }
+
+        game.world.remove(scoreText);
+        scoreText = game.add.text(10, this.player.y, 'score:' + score, {font: "20px Arial", fill: "yellow", align: "left"});
+        game.world.remove(livesText);
+        livesText = game.add.text(720, this.player.y, 'lives:' + lives, {font: "20px Arial", fill: "yellow", align: "left"});
+
 
         if (counter > 0 && this.player.body.velocity.y === 0) {
             console.log('died');
             counter = 0;
             lives--;
             this.player.play('down');
-
-            livesText.text = 'lives: ' + lives;
-
             if (lives === 0) {
                 console.log('game over');
                 introText.text = 'Game Over!';
                 introText.visible = true;
 
                 this.player.play('dead');// rip animation
-
                 this.player.kill();
                 //this.button.visible = true;
-                //game.state.restart();
+            }
+            else {
+                //hasntTouchFruit = true; - the fruit stays after death
+                game.state.restart();
             }
         }
     }
-
 };
 
 game.state.add('Game', JumpGame, true);
