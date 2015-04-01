@@ -4,12 +4,12 @@ var lives = 3;
 var scoreText;
 var livesText;
 var introText;
-var orange;
+var fruit;
 var score = 0;
 var isEaten = false;
 var hasntTouchOrange = true;
 var orangeIsEaten = false;
-var s;
+
 var music;
 
 var JumpGame = function () {
@@ -101,7 +101,40 @@ JumpGame.prototype = {
 
         //CREATE FRUITS
 
-        //this.orange = this.add.sprite(0, 2250, 'orange');
+        //TODO fruits
+
+        this.fruit = game.add.physicsGroup(Phaser.Physics.ARCADE);
+
+        for (var i = 0; i < 10; i++)
+        {
+            var c = this.fruit.create(game.rnd.integerInRange(30, 800-30), game.rnd.integerInRange(200, 2000), 'orange', 1);
+
+        }
+        this.fruit.setAll('body.allowGravity', false);
+        this.fruit.setAll('body.immovable', true);
+
+        var x = 0;
+        var y = 64;
+
+        for (var i = 0; i < 19; i++) {
+            var platform = this.platforms.create(x, y, 'dark-platform');
+
+            //  Set a random speed between 50 and 200
+            platform.body.velocity.x = this.rnd.between(50, 100);
+
+            //  Inverse it?
+            if (Math.random() < 0.5) {
+                platform.body.velocity.x *= -1;
+            }
+
+            x += 400;
+
+            if (x >= 800) {
+                x = 0;
+            }
+
+            y += 150;
+        }
 
 
 
