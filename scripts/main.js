@@ -25,6 +25,7 @@ var JumpGame = function () {
     this.wasStanding = false;
     this.cursors = null;
 
+    this.stationaryPlat = 200;
 };
 
 JumpGame.prototype = {
@@ -73,7 +74,7 @@ JumpGame.prototype = {
         this.add.sprite(0, 2100, 'trees');
 
         this.platforms = this.add.physicsGroup();
-        this.fruit = this.add.physicsGroup();
+
 
         var x = 0;
         var y = 64;
@@ -99,28 +100,25 @@ JumpGame.prototype = {
         }
 
         //CREATE FRUITS
-        this.orange = this.add.sprite(650, 2050, 'orange');
+
         //this.orange = this.add.sprite(0, 2250, 'orange');
 
 
 
-        //CREATE PLATFORMS
-        this.platforms.create(0, 200, 'platform');
-        this.platforms.create(650, 600, 'platform');
-        this.platforms.create(0, 1000, 'platform');
-        this.platforms.create(650, 1300, 'platform');
-        this.platforms.create(0, 1600, 'platform');
-        this.platforms.create(650, 1800, 'platform');
-        this.platforms.create(0, 1950, 'platform');
-        this.platforms.create(650, 2250, 'platform');
+        for (i = 0; i < 19; i++) {
+            if(i % 2 == 0) {
+                this.platforms.create(0, this.stationaryPlat, 'platform');
+            }
+            else {
+                this.platforms.create(650, this.stationaryPlat, 'platform');
+            }
+            this.stationaryPlat += 250;
+        }
+        this.stationaryPlat = 200;
 
 
         this.platforms.setAll('body.allowGravity', false);
         this.platforms.setAll('body.immovable', true);
-
-        this.fruit.setAll('body.allowGravity', false);
-        this.fruit.setAll('body.immovable', true);
-
 
         this.player = this.add.sprite(game.world.centerX - 100, 2300, 'player');
 
@@ -164,16 +162,6 @@ JumpGame.prototype = {
 
     },
 
-    fruitEaten: function (player, fruit) {
-        // TODO fruit disappear, score++
-        if (player.x > fruit.x - 30 &&
-            player.x < fruit.x + 30 &&
-            player.y > fruit.y - 30 &&
-            player.y < fruit.y + 30) {
-            return true;
-        }
-    },
-
     update: function () {
 
         this.background.tilePosition.y = -(this.camera.y * 0.7);
@@ -183,12 +171,6 @@ JumpGame.prototype = {
         this.physics.arcade.collide(this.player, this.platforms);
 
         //this.physics.arcade.collide(this.player, this.platform, this.setFriction, null, this);
-
-        if (orangeIsEaten) {
-            game.world.remove(this.orange);
-        }
-
-        this.physics.arcade.overlap(this.player, this.fruit, this.fruitEaten);
 
         //  Do this AFTER the collide check, or we won't have blocked/touching set
         var standing = this.player.body.blocked.down || this.player.body.touching.down;
@@ -243,19 +225,7 @@ JumpGame.prototype = {
         if (this.player.body.velocity.y >= 700) {
             counter++;
         }
-
-        if (this.fruitEaten(this.player, this.orange) && hasntTouchOrange) {
-            isEaten = true;
-        }
-
-        if (isEaten) {
-            score += 20;
-            isEaten = false;
-            hasntTouchOrange = false;
-            orangeIsEaten = true;
-            game.world.remove(this.orange);
-        }
-
+        
         game.world.remove(scoreText);
         scoreText = game.add.text(10, this.camera.y + 550, 'score:' + score, {
             font: "20px Arial",
