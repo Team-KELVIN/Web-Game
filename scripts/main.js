@@ -1,15 +1,10 @@
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game');
 var counter = 0;
-var lives = 3;
+var lives = 2;
 var scoreText;
 var livesText;
 var introText;
-var fruit;
 var score = 0;
-var isEaten = false;
-var hasntTouchOrange = true;
-var orangeIsEaten = false;
-
 var music;
 
 var JumpGame = function () {
@@ -82,10 +77,8 @@ JumpGame.prototype = {
         for (var i = 0; i < 19; i++) {
             var platform = this.platforms.create(x, y, 'dark-platform');
 
-            //  Set a random speed between 50 and 200
             platform.body.velocity.x = this.rnd.between(50, 100);
 
-            //  Inverse it?
             if (Math.random() < 0.5) {
                 platform.body.velocity.x *= -1;
             }
@@ -98,45 +91,16 @@ JumpGame.prototype = {
 
             y += 150;
         }
-
-        //CREATE FRUITS
-
-        //TODO fruits
 
         this.fruit = game.add.physicsGroup(Phaser.Physics.ARCADE);
 
         for (var i = 0; i < 10; i++)
         {
             var c = this.fruit.create(game.rnd.integerInRange(30, 800-30), game.rnd.integerInRange(200, 2000), 'orange', 1);
-
         }
         this.fruit.setAll('body.allowGravity', false);
         this.fruit.setAll('body.immovable', true);
-
-        var x = 0;
-        var y = 64;
-
-        for (var i = 0; i < 19; i++) {
-            var platform = this.platforms.create(x, y, 'dark-platform');
-
-            //  Set a random speed between 50 and 200
-            platform.body.velocity.x = this.rnd.between(50, 100);
-
-            //  Inverse it?
-            if (Math.random() < 0.5) {
-                platform.body.velocity.x *= -1;
-            }
-
-            x += 400;
-
-            if (x >= 800) {
-                x = 0;
-            }
-
-            y += 150;
-        }
-
-
+        
 
         for (i = 0; i < 19; i++) {
             if(i % 2 == 0) {
@@ -170,15 +134,14 @@ JumpGame.prototype = {
         this.camera.follow(this.player);
 
         this.cursors = this.input.keyboard.createCursorKeys();
-
-
-        introText = game.add.text(game.world.centerX, this.player.y, '- click to start -', {
-            font: "40px Arial",
-            fill: "yellow",
-            align: "center"
-        });
-        introText.visible = false;
-        introText.anchor.setTo(0.5, 0.5);
+        
+        //introText = game.add.text(game.world.centerX, this.player.y, '- click to start -', {
+        //    font: "40px Arial",
+        //    fill: "yellow",
+        //    align: "center"
+        //});
+        //introText.visible = false;
+        //introText.anchor.setTo(0.5, 0.5);
         //button = game.add.button(game.world.centerX - 95, 2300, 'button', this, 2, 1, 0);
         //button.visible = false;
 
@@ -195,6 +158,11 @@ JumpGame.prototype = {
 
     },
 
+    collisionHandler: function (player, veg) {
+        veg.kill();
+        score += 15;
+    },
+
     update: function () {
 
         this.background.tilePosition.y = -(this.camera.y * 0.7);
@@ -203,9 +171,8 @@ JumpGame.prototype = {
 
         this.physics.arcade.collide(this.player, this.platforms);
 
-        //this.physics.arcade.collide(this.player, this.platform, this.setFriction, null, this);
-
-        //  Do this AFTER the collide check, or we won't have blocked/touching set
+        this.physics.arcade.collide(this.player, this.fruit, this.collisionHandler, null, this);
+        
         var standing = this.player.body.blocked.down || this.player.body.touching.down;
 
         this.player.body.velocity.x = 0;
@@ -241,14 +208,12 @@ JumpGame.prototype = {
             }
         }
 
-        //  Period to jump after falling
         if (!standing && this.wasStanding) {
             this.edgeTimer = this.time.time + 250;
         }
 
-        //  Allowed to jump?
         if ((standing || this.time.time <= this.edgeTimer) && this.cursors.up.isDown && this.time.time > this.jumpTimer) {
-            //Jumping distance
+
             this.player.body.velocity.y = -500;
             this.jumpTimer = this.time.time + 750;
         }
@@ -261,37 +226,36 @@ JumpGame.prototype = {
         
         game.world.remove(scoreText);
         scoreText = game.add.text(10, this.camera.y + 550, 'score:' + score, {
-            font: "20px Arial",
-            fill: "yellow",
+            font: "25px Candara",
+            fill: "#FF9933",
             align: "left"
         });
 
         game.world.remove(livesText);
         livesText = game.add.text(720, this.camera.y + 550, 'lives:' + lives, {
-            font: "20px Arial",
-            fill: "yellow",
+            font: "25px Candara",
+            fill: "#FF9933",
             align: "left"
         });
 
 
         if (counter > 0 && this.player.body.velocity.y === 0) {
-            console.log('died');
             counter = 0;
             lives--;
             this.player.play('down');
             if (lives === 0) {
-                console.log('game over');
-                introText.text = 'Game Over!';
+                introText = game.add.text(300, this.player.y, 'Game Over!', {
+                    font: "40px Candara",
+                    fill: "#FF9933",
+                    align: "center"
+                });
                 introText.visible = true;
 
                 this.player.play('dead');// rip animation
                 this.player.kill();
                 //this.button.visible = true;
-            }
-            //else {
-            //    //hasntTouchFruit = true; - the fruit stays after death
-            //    game.state.restart();
-            //}
+        }
+
         }
     }
 };
