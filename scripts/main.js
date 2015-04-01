@@ -4,10 +4,13 @@ var lives = 3;
 var scoreText;
 var livesText;
 var introText;
+var orange;
 var score = 0;
 var isEaten = false;
 var hasntTouchOrange = true;
 var orangeIsEaten = false;
+var s;
+var music;
 
 var JumpGame = function () {
 
@@ -41,6 +44,8 @@ JumpGame.prototype = {
 
     preload: function () {
 
+        game.load.audio('music', 'assets/03-ape-quest.mp3');
+
         this.load.image('orange', 'assets/orange.png');
         this.load.image('trees', 'assets/trees.png');
         this.load.image('background', 'assets/background-forest.png');
@@ -55,6 +60,10 @@ JumpGame.prototype = {
         //this.platforms.setAll('body.allowGravity', false);
         //this.platforms.setAll('body.immovable', true);
         //this.platforms.setAll('body.velocity.x', 100);
+
+        music = game.add.audio('music');
+
+        music.play();
 
         this.stage.backgroundColor = '#2f9acc';
 
@@ -91,6 +100,9 @@ JumpGame.prototype = {
 
         //CREATE FRUITS
         this.orange = this.add.sprite(650, 2050, 'orange');
+        //this.orange = this.add.sprite(0, 2250, 'orange');
+
+
 
         //CREATE PLATFORMS
         this.platforms.create(0, 200, 'platform');
@@ -99,8 +111,8 @@ JumpGame.prototype = {
         this.platforms.create(650, 1300, 'platform');
         this.platforms.create(0, 1600, 'platform');
         this.platforms.create(650, 1800, 'platform');
-        this.platforms.create(0, 2000, 'platform');
-        this.platforms.create(650, 2300, 'platform');
+        this.platforms.create(0, 1950, 'platform');
+        this.platforms.create(650, 2250, 'platform');
 
 
         this.platforms.setAll('body.allowGravity', false);
@@ -129,11 +141,7 @@ JumpGame.prototype = {
         this.cursors = this.input.keyboard.createCursorKeys();
 
 
-        // TODO score and lives need to be fixed at window
-
-
-
-        introText = game.add.text(game.world.centerX, 2300, '- click to start -', {
+        introText = game.add.text(game.world.centerX, this.player.y, '- click to start -', {
             font: "40px Arial",
             fill: "yellow",
             align: "center"
@@ -151,25 +159,17 @@ JumpGame.prototype = {
             platform.x = 800;
         }
         else if (platform.body.velocity.x > 0 && platform.x >= 800) {
-            platform.x = -150;
+            platform.x = -160;
         }
 
     },
 
-    // sliding
-    //
-    //setFriction: function (player, platform) {
-    //
-    //    if (platform.key === 'ice-platform')
-    //    {
-    //        player.body.x -= platform.body.x - platform.body.prev.x;
-    //    }
-    //
-    //},
-
     fruitEaten: function (player, fruit) {
         // TODO fruit disappear, score++
-        if (player.x > fruit.x - 30 && player.x < fruit.x + 30 && player.y > fruit.y - 30 && player.y < fruit.y + 30) {
+        if (player.x > fruit.x - 30 &&
+            player.x < fruit.x + 30 &&
+            player.y > fruit.y - 30 &&
+            player.y < fruit.y + 30) {
             return true;
         }
     },
@@ -257,9 +257,18 @@ JumpGame.prototype = {
         }
 
         game.world.remove(scoreText);
-        scoreText = game.add.text(10, this.player.y, 'score:' + score, {font: "20px Arial", fill: "yellow", align: "left"});
+        scoreText = game.add.text(10, this.camera.y + 550, 'score:' + score, {
+            font: "20px Arial",
+            fill: "yellow",
+            align: "left"
+        });
+
         game.world.remove(livesText);
-        livesText = game.add.text(720, this.player.y, 'lives:' + lives, {font: "20px Arial", fill: "yellow", align: "left"});
+        livesText = game.add.text(720, this.camera.y + 550, 'lives:' + lives, {
+            font: "20px Arial",
+            fill: "yellow",
+            align: "left"
+        });
 
 
         if (counter > 0 && this.player.body.velocity.y === 0) {
@@ -276,10 +285,10 @@ JumpGame.prototype = {
                 this.player.kill();
                 //this.button.visible = true;
             }
-            else {
-                //hasntTouchFruit = true; - the fruit stays after death
-                game.state.restart();
-            }
+            //else {
+            //    //hasntTouchFruit = true; - the fruit stays after death
+            //    game.state.restart();
+            //}
         }
     }
 };
