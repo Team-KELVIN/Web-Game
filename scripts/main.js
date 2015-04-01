@@ -1,6 +1,6 @@
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game');
 var counter = 0;
-var lives = 2;
+var lives = 3;
 var scoreText;
 var livesText;
 var introText;
@@ -52,10 +52,6 @@ JumpGame.prototype = {
     },
 
     create: function () {
-
-        //this.platforms.setAll('body.allowGravity', false);
-        //this.platforms.setAll('body.immovable', true);
-        //this.platforms.setAll('body.velocity.x', 100);
 
         music = game.add.audio('music',1,true);
 
@@ -134,16 +130,6 @@ JumpGame.prototype = {
         this.camera.follow(this.player);
 
         this.cursors = this.input.keyboard.createCursorKeys();
-        
-        //introText = game.add.text(game.world.centerX, this.player.y, '- click to start -', {
-        //    font: "40px Arial",
-        //    fill: "yellow",
-        //    align: "center"
-        //});
-        //introText.visible = false;
-        //introText.anchor.setTo(0.5, 0.5);
-        //button = game.add.button(game.world.centerX - 95, 2300, 'button', this, 2, 1, 0);
-        //button.visible = false;
 
     },
 
