@@ -61,7 +61,7 @@ JumpGame.prototype = {
         //this.platforms.setAll('body.immovable', true);
         //this.platforms.setAll('body.velocity.x', 100);
 
-        music = game.add.audio('music');
+        music = game.add.audio('music',1,true);
 
         music.play();
 
