@@ -1,6 +1,6 @@
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game');
 var counter = 0;
-var lives = 2;
+var lives = 3;
 var scoreText;
 var livesText;
 var introText;
@@ -42,26 +42,22 @@ JumpGame.prototype = {
 
         game.load.audio('music', 'assets/03-ape-quest.mp3');
 
+        this.load.spritesheet('player', 'assets/posum-guy.png', 100, 100);
+        this.load.image('small-orange', 'assets/small-orange.png');
         this.load.image('orange', 'assets/orange.png');
         this.load.image('trees', 'assets/trees.png');
         this.load.image('background', 'assets/background-forest.png');
         this.load.image('platform', 'assets/platform.png');
         this.load.image('dark-platform', 'assets/dark-platform.png');
-        this.load.spritesheet('player', 'assets/posum-guy.png', 100, 100);
 
     },
 
     create: function () {
 
-        //this.platforms.setAll('body.allowGravity', false);
-        //this.platforms.setAll('body.immovable', true);
-        //this.platforms.setAll('body.velocity.x', 100);
 
         music = game.add.audio('music',1,true);
 
         music.play();
-
-        this.stage.backgroundColor = '#2f9acc';
 
         this.background = this.add.tileSprite(0, 0, 800, 600, 'background');
         this.background.fixedToCamera = true;
@@ -69,7 +65,6 @@ JumpGame.prototype = {
         this.add.sprite(0, 2100, 'trees');
 
         this.platforms = this.add.physicsGroup();
-
 
         var x = 0;
         var y = 64;
@@ -96,8 +91,11 @@ JumpGame.prototype = {
 
         for (var i = 0; i < 10; i++)
         {
-            var c = this.fruit.create(game.rnd.integerInRange(30, 800-30), game.rnd.integerInRange(200, 2000), 'orange', 1);
+            var c = this.fruit.create(game.rnd.integerInRange(30, 800-30), game.rnd.integerInRange(200, 2000), 'small-orange', 1);
         }
+
+        var big = this.fruit.create(300, 200, 'orange', 1);
+
         this.fruit.setAll('body.allowGravity', false);
         this.fruit.setAll('body.immovable', true);
         
@@ -125,25 +123,14 @@ JumpGame.prototype = {
         this.player.body.setSize(100, 100, 0, 0);
 
         this.player.animations.add('right', [6, 7, 8, 9, 10, 11], 7, true);
-        //this.player.animations.add('turn', [0], 20, false);
         this.player.animations.add('left', [12, 13, 14, 15, 16, 17], 7, true);
         this.player.animations.add('down', [20, 20], 2, true);
         this.player.animations.add('dead', [21, 21], 2, true);
 
-
         this.camera.follow(this.player);
 
         this.cursors = this.input.keyboard.createCursorKeys();
-        
-        //introText = game.add.text(game.world.centerX, this.player.y, '- click to start -', {
-        //    font: "40px Arial",
-        //    fill: "yellow",
-        //    align: "center"
-        //});
-        //introText.visible = false;
-        //introText.anchor.setTo(0.5, 0.5);
-        //button = game.add.button(game.world.centerX - 95, 2300, 'button', this, 2, 1, 0);
-        //button.visible = false;
+
 
     },
 
@@ -158,12 +145,13 @@ JumpGame.prototype = {
 
     },
 
-    collisionHandler: function (player, veg) {
-        veg.kill();
+    collisionHandler: function (player, fruit) {
+        fruit.kill();
         score += 15;
     },
 
     update: function () {
+
 
         this.background.tilePosition.y = -(this.camera.y * 0.7);
 
@@ -223,7 +211,8 @@ JumpGame.prototype = {
         if (this.player.body.velocity.y >= 700) {
             counter++;
         }
-        
+
+
         game.world.remove(scoreText);
         scoreText = game.add.text(10, this.camera.y + 550, 'score:' + score, {
             font: "25px Candara",
@@ -252,8 +241,7 @@ JumpGame.prototype = {
                 introText.visible = true;
 
                 this.player.play('dead');// rip animation
-                this.player.kill();
-                //this.button.visible = true;
+                this.player.kill(standing);
         }
 
         }
