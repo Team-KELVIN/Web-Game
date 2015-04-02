@@ -54,7 +54,10 @@ JumpGame.prototype = {
 
     create: function () {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c35d9bd3eb03652e77ea9a7558483959d2fb7903
         music = game.add.audio('music',1,true);
 
         music.play();
@@ -130,7 +133,10 @@ JumpGame.prototype = {
         this.camera.follow(this.player);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+<<<<<<< HEAD
 
+=======
+>>>>>>> c35d9bd3eb03652e77ea9a7558483959d2fb7903
 
     },
 
